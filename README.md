@@ -3,6 +3,8 @@
 A JavaScript/TypeScript library for visualizing ternary compositions with choropleth maps,
 heavily inspired by the [R tricolore package](https://github.com/jschoeley/tricolore/).
 
+![Example of maps made with tricolore library](./misc/tricolore-maps.png)
+
 ## Installation
 
 ```bash
