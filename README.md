@@ -5,6 +5,9 @@ heavily inspired by the [R tricolore package](https://github.com/jschoeley/trico
 
 ![Example of maps made with tricolore library](./misc/tricolore-maps.png)
 
+[Example notebook](https://observablehq.com/@mthh/choropleth-maps-based-on-ternary-composition)  
+[Example notebook (Sextant)](https://observablehq.com/@mthh/choropleth-maps-based-on-ternary-compositions-sext)
+
 ## Installation
 
 ```bash
