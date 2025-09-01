@@ -77,10 +77,10 @@ export interface TricoloreResult {
   p1: number;
   p2: number;
   p3: number;
-  h: number;
-  c: number;
-  l: number;
-  rgb: RGBColor;
+  h: number | null;
+  c: number | null;
+  l: number | null;
+  rgb: RGBColor | null;
 }
 
 /**
@@ -91,7 +91,7 @@ export interface SextantResult {
   p2: number;
   p3: number;
   sextant: number | null;
-  rgb: RGBColor;
+  rgb: RGBColor | null;
 }
 
 /**

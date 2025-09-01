@@ -43,8 +43,9 @@ export class CompositionUtils {
    * @param c - Perturbation vector
    * @returns Perturbated compositions
    */
-  static pertube(P: TernaryPoint[], c: TernaryPoint = [1 / 3, 1 / 3, 1 / 3]): TernaryPoint[] {
+  static pertube(P: (TernaryPoint | null)[], c: TernaryPoint = [1 / 3, 1 / 3, 1 / 3]): (TernaryPoint | null)[] {
     return P.map((p) => {
+      if (!p) return null;
       const raw = [p[0] * c[0], p[1] * c[1], p[2] * c[2]];
       const sum = raw.reduce((a, b) => a + b, 0);
       return [raw[0] / sum, raw[1] / sum, raw[2] / sum];
@@ -58,8 +59,9 @@ export class CompositionUtils {
    * @param scale - Power scalar
    * @returns Scaled compositions
    */
-  static powerScale(P: TernaryPoint[], scale: number = 1): TernaryPoint[] {
+  static powerScale(P: (TernaryPoint | null)[], scale: number = 1): (TernaryPoint | null)[] {
     return P.map((p) => {
+      if (!p) return null;
       const raw = [Math.pow(p[0], scale), Math.pow(p[1], scale), Math.pow(p[2], scale)];
       const sum = raw.reduce((a, b) => a + b, 0);
       return [raw[0] / sum, raw[1] / sum, raw[2] / sum];
@@ -72,8 +74,11 @@ export class CompositionUtils {
    * @param P - Array of ternary points
    * @returns Closed compositions
    */
-  static close(P: TernaryPoint[]): TernaryPoint[] {
+  static close(P: TernaryPoint[]): (TernaryPoint | null)[] {
     return P.map((p) => {
+      if (!this.isValidTernary(p)) {
+        return null;
+      }
       const sum = p[0] + p[1] + p[2];
       return [p[0] / sum, p[1] / sum, p[2] / sum];
     });
@@ -101,5 +106,14 @@ export class CompositionUtils {
         throw new Error(`Ternary point components must sum to 1, got ${sum}: [${p}]`);
       }
     }
+  }
+
+  /**
+   * Validate that a point is a valid ternary point (i.e., has three non-null components)
+   */
+  static isValidTernary(point: TernaryPoint): boolean {
+    return Array.isArray(point) &&
+      point.length === 3 &&
+      point.every((v) => typeof v === "number" && !Number.isNaN(v));
   }
 }

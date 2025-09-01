@@ -55,6 +55,20 @@ export class ColorMapping {
 
     // Calculate colors
     return scaled.map((p, i) => {
+      // Handle invalid compositions
+      // (i.e. composition that contains null/undefined/NaN values)
+      if (!p) {
+        return {
+          p1: P[i][0],
+          p2: P[i][1],
+          p3: P[i][2],
+          h: null,
+          c: null,
+          l: null,
+          rgb: null,
+        } as TricoloreResult;
+      }
+
       // Scale proportions by maximum chroma
       const C = p.map((v) => v * chroma);
 
@@ -87,9 +101,9 @@ export class ColorMapping {
       const rgb = this.hclToHex(h, adjustedC, l);
 
       return {
-        p1: P_notrans[i][0],
-        p2: P_notrans[i][1],
-        p3: P_notrans[i][2],
+        p1: P_notrans[i]![0],
+        p2: P_notrans[i]![1],
+        p3: P_notrans[i]![2],
         h,
         c: adjustedC,
         l,
@@ -122,8 +136,20 @@ export class ColorMapping {
     const sextants = TernaryGeometry.ternarySurroundingSextant(closed, center);
 
     return closed.map((p, i) => {
+      // Handle invalid compositions
+      // (i.e. composition that contains null/undefined/NaN values)
+      if (!p) {
+        return {
+          p1: P[i][0],
+          p2: P[i][1],
+          p3: P[i][2],
+          sextant: null,
+          rgb: null,
+        } as SextantResult;
+      }
+
       const sextant = sextants[i];
-      const rgb = sextant !== null ? values[sextant - 1] : '#CCCCCC';
+      const rgb = sextant !== null ? values[sextant - 1] : null;
 
       return {
         p1: p[0],

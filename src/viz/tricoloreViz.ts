@@ -323,9 +323,9 @@ export class TricoloreViz {
         )[0];
 
         // Parse the hex color
-        const r = parseInt(color.rgb.slice(1, 3), 16);
-        const g = parseInt(color.rgb.slice(3, 5), 16);
-        const b = parseInt(color.rgb.slice(5, 7), 16);
+        const r = parseInt(color.rgb!.slice(1, 3), 16);
+        const g = parseInt(color.rgb!.slice(3, 5), 16);
+        const b = parseInt(color.rgb!.slice(5, 7), 16);
 
         // Set the pixel color
         const pixelIndex = (y * resolution + x) * 4;
