@@ -37,13 +37,13 @@ export class CompositionUtils {
   }
 
   /**
-   * Perturbate a compositional dataset by a compositional vector
+   * Perturbe a compositional dataset by a compositional vector
    *
    * @param P - Array of ternary points
    * @param c - Perturbation vector
    * @returns Perturbated compositions
    */
-  static pertube(P: (TernaryPoint | null)[], c: TernaryPoint = [1 / 3, 1 / 3, 1 / 3]): (TernaryPoint | null)[] {
+  static perturbe(P: (TernaryPoint | null)[], c: TernaryPoint = [1 / 3, 1 / 3, 1 / 3]): (TernaryPoint | null)[] {
     return P.map((p) => {
       if (!p) return null;
       const raw = [p[0] * c[0], p[1] * c[1], p[2] * c[2]];

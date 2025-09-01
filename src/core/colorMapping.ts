@@ -46,7 +46,7 @@ export class ColorMapping {
     }
 
     // Center and scale
-    const centered = CompositionUtils.pertube(closed, [
+    const centered = CompositionUtils.perturbe(closed, [
       1 / center[0],
       1 / center[1],
       1 / center[2],
