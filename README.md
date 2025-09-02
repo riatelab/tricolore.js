@@ -159,7 +159,7 @@ d3.json('regions.json').then((geojson) => {
 
 ## API Documentation
 
-See the [full documentation](https://mthh.github.io/tricolore.js/) for detailed API reference.
+See the [full documentation](https://riatelab.github.io/tricolore.js/) for detailed API reference.
 
 ## License
 
