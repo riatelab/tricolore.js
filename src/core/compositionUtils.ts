@@ -90,9 +90,12 @@ export class CompositionUtils {
    * @param P - Array of ternary points to validate
    * @throws Error if any point has negative values or values don't sum to approximately 1
    */
-  static validateTernaryPoints(P: TernaryPoint[]): void {
+  static validateTernaryPoints(P: (TernaryPoint | null)[]): void {
     for (let i = 0; i < P.length; i++) {
       const p = P[i];
+      if (!p) {
+        continue;
+      }
       if (p.length !== 3) {
         throw new Error(`Ternary point must have exactly 3 components, got ${p.length}`);
       }
