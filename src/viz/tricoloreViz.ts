@@ -65,15 +65,12 @@ export class TricoloreViz {
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Create group for legending elements (axis names and ticks)
-    this.legend = this.svg
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    this.legend = this.svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Create group for data points
     this.circles = this.svg
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
-
   }
 
   /**
@@ -467,17 +464,17 @@ export class TricoloreViz {
 
       const p1Line = [
         this.ternaryToSvgCoords([center[0], 0, 1 - center[0]], size),
-        this.ternaryToSvgCoords([center[0], 1 - center[0], 0], size)
+        this.ternaryToSvgCoords([center[0], 1 - center[0], 0], size),
       ];
 
       const p2Line = [
         this.ternaryToSvgCoords([0, center[1], 1 - center[1]], size),
-        this.ternaryToSvgCoords([1 - center[1], center[1], 0], size)
+        this.ternaryToSvgCoords([1 - center[1], center[1], 0], size),
       ];
 
       const p3Line = [
         this.ternaryToSvgCoords([0, 1 - center[2], center[2]], size),
-        this.ternaryToSvgCoords([1 - center[2], 0, center[2]], size)
+        this.ternaryToSvgCoords([1 - center[2], 0, center[2]], size),
       ];
 
       [p1Line, p2Line, p3Line].forEach((line) => {
@@ -533,7 +530,6 @@ export class TricoloreViz {
         .attr('font-size', '10px')
         .text(`${val * 100}%`);
     });
-
   }
 
   /**

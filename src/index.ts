@@ -95,7 +95,10 @@ export function tricoloreDetailed(
  * @param options - Configuration options
  * @returns Array of hex color codes
  */
-export function tricoloreSextant(data: TernaryPoint[], options: SextantOptions = {}): (string | null)[] {
+export function tricoloreSextant(
+  data: TernaryPoint[],
+  options: SextantOptions = {}
+): (string | null)[] {
   const {
     center = [1 / 3, 1 / 3, 1 / 3],
     values = ['#FFFF00', '#B3DCC3', '#01A0C6', '#B8B3D8', '#F11D8C', '#FFB3B3'],

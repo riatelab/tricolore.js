@@ -43,7 +43,10 @@ export class CompositionUtils {
    * @param c - Perturbation vector
    * @returns Perturbated compositions
    */
-  static perturbe(P: (TernaryPoint | null)[], c: TernaryPoint = [1 / 3, 1 / 3, 1 / 3]): (TernaryPoint | null)[] {
+  static perturbe(
+    P: (TernaryPoint | null)[],
+    c: TernaryPoint = [1 / 3, 1 / 3, 1 / 3]
+  ): (TernaryPoint | null)[] {
     return P.map((p) => {
       if (!p) return null;
       const raw = [p[0] * c[0], p[1] * c[1], p[2] * c[2]];
@@ -115,8 +118,10 @@ export class CompositionUtils {
    * Validate that a point is a valid ternary point (i.e., has three non-null components)
    */
   static isValidTernary(point: TernaryPoint): boolean {
-    return Array.isArray(point) &&
+    return (
+      Array.isArray(point) &&
       point.length === 3 &&
-      point.every((v) => typeof v === "number" && !Number.isNaN(v));
+      point.every((v) => typeof v === 'number' && !Number.isNaN(v))
+    );
   }
 }

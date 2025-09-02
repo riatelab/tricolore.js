@@ -98,7 +98,7 @@ export class TernaryGeometry {
    */
   static ternaryNearest(P: (TernaryPoint | null)[], C: TernaryPoint[]): (TernaryPoint | null)[] {
     return P.map((p) => {
-      if (!p) return null
+      if (!p) return null;
       const distances = this.ternaryDistance(p, C);
       const minIndex = distances.indexOf(Math.min(...distances));
       return C[minIndex];
@@ -165,7 +165,10 @@ export class TernaryGeometry {
    * @param center - Center point of the sextants
    * @returns Array of sextant ids (1-6) or null
    */
-  static ternarySurroundingSextant(P: (TernaryPoint | null)[], center: TernaryPoint): (number | null)[] {
+  static ternarySurroundingSextant(
+    P: (TernaryPoint | null)[],
+    center: TernaryPoint
+  ): (number | null)[] {
     return P.map((p) => {
       if (!p) return null;
 
