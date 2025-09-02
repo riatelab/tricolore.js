@@ -11,12 +11,13 @@ import d3 from 'd3';
  */
 export class TricoloreViz {
   private container: any; // D3Selection;
-  private width: number;
-  private height: number;
+  private readonly width: number;
+  private readonly height: number;
   private margin: { top: number; right: number; bottom: number; left: number };
   private svg: any; // D3Selection;
   private triangle: any; // D3Selection;
   private legend: any; // D3Selection;
+  private circles: any; // D3Selection
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
 
@@ -67,6 +68,12 @@ export class TricoloreViz {
     this.legend = this.svg
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // Create group for data points
+    this.circles = this.svg
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
+
   }
 
   /**
@@ -106,6 +113,7 @@ export class TricoloreViz {
     // Clear previous contents
     this.triangle.selectAll('*').remove();
     this.legend.selectAll('*').remove();
+    this.circles.selectAll('*').remove();
 
     // Create canvas for continuous color rendering
     this.canvas = document.createElement('canvas');
@@ -166,6 +174,7 @@ export class TricoloreViz {
     // Clear previous contents
     this.triangle.selectAll('*').remove();
     this.legend.selectAll('*').remove();
+    this.circles.selectAll('*').remove();
 
     // Generate mesh centroids and vertices
     const centroids = TernaryGeometry.ternaryMeshCentroids(breaks);
@@ -246,6 +255,7 @@ export class TricoloreViz {
     // Clear previous contents
     this.triangle.selectAll('*').remove();
     this.legend.selectAll('*').remove();
+    this.circles.selectAll('*').remove();
 
     // Generate sextant vertices
     const vertices = TernaryGeometry.ternarySextantVertices(center);
@@ -491,7 +501,6 @@ export class TricoloreViz {
       ];
       this.legend
         .append('text')
-        // .attr('class', 'p1')
         .attr('x', line[0][0] - 5)
         .attr('y', line[0][1])
         .attr('text-anchor', 'end')
@@ -505,7 +514,6 @@ export class TricoloreViz {
       ];
       this.legend
         .append('text')
-        // .attr('class', 'p2')
         .attr('x', line[0][0] + 5)
         .attr('y', line[0][1])
         .attr('text-anchor', 'start')
@@ -519,7 +527,6 @@ export class TricoloreViz {
       ];
       this.legend
         .append('text')
-        // .attr('class', 'p3')
         .attr('x', line[0][0])
         .attr('y', line[0][1] + 10)
         .attr('text-anchor', 'middle')
@@ -549,16 +556,18 @@ export class TricoloreViz {
     // }
 
     closed.forEach((p, i) => {
-      const [x, y] = this.ternaryToSvgCoords(p, size);
+      if (p) {
+        const [x, y] = this.ternaryToSvgCoords(p, size);
 
-      this.triangle
-        .append('circle')
-        .datum({ point: p, id: i })
-        .attr('cx', x)
-        .attr('cy', y)
-        .attr('r', 2)
-        .attr('fill', 'black')
-        .attr('opacity', 0.5);
+        this.circles
+          .append('circle')
+          .datum({ point: p, id: i })
+          .attr('cx', x)
+          .attr('cy', y)
+          .attr('r', 2)
+          .attr('fill', 'black')
+          .attr('opacity', 0.5);
+      }
     });
   }
 
