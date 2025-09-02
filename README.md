@@ -42,12 +42,41 @@ const data = [
 // Get color codes for each composition
 const colors = tricolore(data, {
   center: [1/3, 1/3, 1/3],  // Center of the color scale
-  breaks: 3,                // Discretization level (let it undefined for continuous)
+  breaks: 3,                // Discretization level (use Infinity for continuous)
   hue: 80,                  // Primary hue
   chroma: 140,              // Color intensity
   lightness: 80,            // Color lightness
   contrast: 0.4,            // Contrast between colors
   spread: 1                 // Spread of colors around center
+});
+
+console.log(colors); // An array of hex color codes
+```
+
+### Color mapping (+ mean centering)
+
+```javascript
+import { tricolore, CompositionUtils } from 'tricolore';
+
+// Create some ternary compositions (p1 + p2 + p3 = 1)
+const data = [
+  [0.7, 0.2, 0.1],
+  [0.3, 0.6, 0.1],
+  [0.2, 0.3, 0.5]
+];
+
+// Compute center
+const center = CompositionUtils.center(data);
+
+// Get color codes for each composition
+const colors = tricolore(data, {
+  center: center,     // Use the computed center
+  breaks: Infinity,   // Discretization level (Infinity for continuous color scale)
+  hue: 10,            // Primary hue
+  chroma: 120,        // Color intensity
+  lightness: 70,      // Color lightness
+  contrast: 0.2,      // Contrast between colors
+  spread: 1           // Spread of colors around center
 });
 
 console.log(colors); // An array of hex color codes
