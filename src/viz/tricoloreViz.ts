@@ -96,6 +96,7 @@ export class TricoloreViz {
       showCenter = true,
       showLines = true,
       labels = ['p₁', 'p₂', 'p₃'],
+      labelPosition = 'corner',
     } = options;
 
     const plotWidth = this.width - this.margin.left - this.margin.right;
@@ -133,7 +134,7 @@ export class TricoloreViz {
       .attr('href', this.canvas.toDataURL());
 
     // Add triangle border and axes using SVG
-    this.drawTriangleFrame(size, labels, center, showCenter, showLines);
+    this.drawTriangleFrame(size, labels, center, showCenter, showLines, labelPosition);
 
     // Add data points if requested
     if (showData && data.length > 0) {
@@ -162,6 +163,7 @@ export class TricoloreViz {
       showCenter = true,
       showLines = true,
       labels = ['p₁', 'p₂', 'p₃'],
+      labelPosition = 'corner',
     } = options;
 
     const plotWidth = this.width - this.margin.left - this.margin.right;
@@ -212,7 +214,7 @@ export class TricoloreViz {
     });
 
     // Draw triangle border and axes
-    this.drawTriangleFrame(size, labels, center, showCenter, showLines);
+    this.drawTriangleFrame(size, labels, center, showCenter, showLines, labelPosition);
 
     // Add data points if requested
     if (showData && data.length > 0) {
@@ -239,6 +241,7 @@ export class TricoloreViz {
       showCenter = true,
       showLines = true,
       labels = ['p₁', 'p₂', 'p₃'],
+      labelPosition = 'corner',
     } = options;
 
     if (values.length !== 6) {
@@ -282,7 +285,7 @@ export class TricoloreViz {
     });
 
     // Draw triangle border and axes
-    this.drawTriangleFrame(size, labels, center, showCenter, showLines);
+    this.drawTriangleFrame(size, labels, center, showCenter, showLines, labelPosition);
 
     // Add data points if requested
     if (showData && data.length > 0) {
@@ -354,7 +357,8 @@ export class TricoloreViz {
     labels: [string, string, string],
     center: TernaryPoint,
     showCenter: boolean,
-    showLines: boolean
+    showLines: boolean,
+    labelPosition: 'corner' | 'edge' = 'corner'
   ): void {
     // Define triangle corners in ternary coordinates
     // and convert to SVG coordinates
@@ -376,20 +380,41 @@ export class TricoloreViz {
       .attr('stroke-width', 1);
 
     // Add axis names
-    const labelPositions = [
-      [svgCorners[0][0], svgCorners[0][1] + 25], // p1
-      [svgCorners[1][0], svgCorners[1][1] - 15], // p2
-      [svgCorners[2][0], svgCorners[2][1] + 25], // p3
-    ];
+    if (labelPosition === 'edge') {
+      const labelPositions = [
+        [(svgCorners[0][0] + svgCorners[1][0]) / 2 - 35, (svgCorners[0][1] + svgCorners[1][1]) / 2 - 14], // p1
+        [(svgCorners[1][0] + svgCorners[2][0]) / 2 + 35, (svgCorners[1][1] + svgCorners[2][1]) / 2 - 14], // p2
+        [(svgCorners[0][0] + svgCorners[2][0]) / 2, (svgCorners[0][1] + svgCorners[2][1]) / 2 + 25], // p3
+      ];
 
-    labels.forEach((label, i) => {
-      this.legend
-        .append('text')
-        .attr('x', labelPositions[i][0])
-        .attr('y', labelPositions[i][1])
-        .attr('text-anchor', 'middle')
-        .text(label);
-    });
+      const rotateValues = [-60, 60, 0];
+
+      labels.forEach((label, i) => {
+        this.legend
+          .append('text')
+          .attr('x', labelPositions[i][0])
+          .attr('y', labelPositions[i][1])
+          .attr('text-anchor', 'middle')
+          .attr('dominant-baseline', 'middle')
+          .attr('transform', `rotate(${rotateValues[i]},${labelPositions[i][0]},${labelPositions[i][1]})`)
+          .text(label);
+      });
+    } else { // 'corner'
+      const labelPositions = [
+        [svgCorners[0][0], svgCorners[0][1] + 25], // p1
+        [svgCorners[1][0], svgCorners[1][1] - 15], // p2
+        [svgCorners[2][0], svgCorners[2][1] + 25], // p3
+      ];
+
+      labels.forEach((label, i) => {
+        this.legend
+          .append('text')
+          .attr('x', labelPositions[i][0])
+          .attr('y', labelPositions[i][1])
+          .attr('text-anchor', 'middle')
+          .text(label);
+      });
+    }
 
     // Add grid lines and labels at 25%, 50%, 75% for each axis
     const gridValues = [0.25, 0.5, 0.75];

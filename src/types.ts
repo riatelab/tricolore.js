@@ -68,6 +68,9 @@ export interface VisualizationOptions extends TricoloreOptions {
 
   /** Show grid lines on the ternary plot */
   showLines?: boolean;
+
+  /** The position of the axis labels: 'corner' | 'edge' (default: 'corner') */
+  labelPosition?: 'corner' | 'edge';
 }
 
 /**
