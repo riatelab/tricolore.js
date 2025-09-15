@@ -13,7 +13,13 @@ export default [
       {
         file: pkg.module,
         format: 'esm',
-        sourcemap: true
+        sourcemap: true,
+      },
+      {
+        file: pkg.module.replace('.js', '.min.js'),
+        format: 'esm',
+        sourcemap: true,
+        plugins: [terser({})]
       },
       {
         file: pkg.main,
@@ -21,7 +27,22 @@ export default [
         sourcemap: true
       },
       {
+        file: pkg.main.replace('.js', '.min.js'),
+        format: 'cjs',
+        sourcemap: true,
+        plugins: [terser({})]
+      },
+      {
         file: pkg.browser,
+        format: 'umd',
+        name: 'tricolore',
+        sourcemap: true,
+        globals: {
+          'd3': 'd3'
+        }
+      },
+      {
+        file: pkg.browser.replace('.js', '.min.js'),
         format: 'umd',
         name: 'tricolore',
         sourcemap: true,
@@ -38,7 +59,6 @@ export default [
         extensions: ['.js', '.ts', '.wasm', '.data'],
       }),
       typescript({ typescript: ts }),
-      terser(),
       license({
         banner: {
           content: `
