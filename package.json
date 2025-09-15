@@ -1,7 +1,7 @@
 {
   "name": "tricolore",
   "version": "0.1.0",
-  "description": "A library for visualizing ternary compositions with choropleth maps",
+  "description": "Color scale for ternary compositions",
   "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
