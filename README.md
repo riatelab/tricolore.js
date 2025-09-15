@@ -11,18 +11,14 @@ heavily inspired by the [R tricolore package](https://github.com/jschoeley/trico
 ## Installation
 
 ```bash
-npm install tricolore
-# or
-yarn add tricolore
+npm install tricolore # Replace npm by you package manager of choice (yarn, pnpm, ...)
 ```
 
 If you plan to use the visualization components, you'll also need D3.js, either included in your HTML
 document or installed via npm/yarn:
 
 ```bash
-npm install d3
-# or
-yarn add d3
+npm install d3 # Replace npm by you package manager of choice (yarn, pnpm, ...)
 ```
 
 ## Usage
