@@ -1,5 +1,8 @@
 # Tricolore.js
 
+![npm](https://img.shields.io/npm/v/tricolore?color=green)
+![license](https://img.shields.io/npm/l/tricolore?color=green)
+
 A JavaScript/TypeScript library for visualizing ternary compositions with choropleth maps,
 heavily inspired by the [R tricolore package](https://github.com/jschoeley/tricolore/).
 
@@ -96,9 +99,14 @@ viz.createContinuousPlot(data, {
   lightness: 80,
   contrast: 0.4,
   spread: 1,
+  // Whether to show the data points on top of the color scale
   showData: true,
+  // Whether to show the center point
   showCenter: true,
-  labels: ['Factor 1', 'Factor 2', 'Factor 3']
+  // Labels for the three corners
+  labels: ['Factor 1', 'Factor 2', 'Factor 3'],
+  // Position of the labels: 'corner' (default), 'edge'
+  labelPosition: 'corner',
 });
 
 // Create a discrete ternary plot
@@ -109,13 +117,15 @@ viz.createDiscretePlot(data, {
   contrast: 0.4,
   spread: 1,
   breaks: 3,
-  showData: true
+  showData: true,
+  labelPosition: 'edge',
 });
 
 // Create a sextant ternary plot
 viz.createSextantPlot(data, {
   values: ['#FFFF00', '#B3DCC3', '#01A0C6', '#B8B3D8', '#F11D8C', '#FFB3B3'],
   showData: true,
+  labelPosition: 'edge',
 });
 ```
 
