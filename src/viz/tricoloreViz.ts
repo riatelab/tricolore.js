@@ -382,8 +382,14 @@ export class TricoloreViz {
     // Add axis names
     if (labelPosition === 'edge') {
       const labelPositions = [
-        [(svgCorners[0][0] + svgCorners[1][0]) / 2 - 35, (svgCorners[0][1] + svgCorners[1][1]) / 2 - 14], // p1
-        [(svgCorners[1][0] + svgCorners[2][0]) / 2 + 35, (svgCorners[1][1] + svgCorners[2][1]) / 2 - 14], // p2
+        [
+          (svgCorners[0][0] + svgCorners[1][0]) / 2 - 35,
+          (svgCorners[0][1] + svgCorners[1][1]) / 2 - 14,
+        ], // p1
+        [
+          (svgCorners[1][0] + svgCorners[2][0]) / 2 + 35,
+          (svgCorners[1][1] + svgCorners[2][1]) / 2 - 14,
+        ], // p2
         [(svgCorners[0][0] + svgCorners[2][0]) / 2, (svgCorners[0][1] + svgCorners[2][1]) / 2 + 25], // p3
       ];
 
@@ -396,10 +402,14 @@ export class TricoloreViz {
           .attr('y', labelPositions[i][1])
           .attr('text-anchor', 'middle')
           .attr('dominant-baseline', 'middle')
-          .attr('transform', `rotate(${rotateValues[i]},${labelPositions[i][0]},${labelPositions[i][1]})`)
+          .attr(
+            'transform',
+            `rotate(${rotateValues[i]},${labelPositions[i][0]},${labelPositions[i][1]})`
+          )
           .text(label);
       });
-    } else { // 'corner'
+    } else {
+      // 'corner'
       const labelPositions = [
         [svgCorners[0][0], svgCorners[0][1] + 25], // p1
         [svgCorners[1][0], svgCorners[1][1] - 15], // p2
