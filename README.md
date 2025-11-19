@@ -3,10 +3,10 @@
 ![npm](https://img.shields.io/npm/v/tricolore?color=green)
 ![license](https://img.shields.io/npm/l/tricolore?color=green)
 
+![Tricolore.js logo](https://raw.githubusercontent.com/riatelab/tricolore.js/main/misc/tricolore-logo.png)
+
 A JavaScript/TypeScript library for visualizing ternary compositions with choropleth maps,
 heavily inspired by the [R tricolore package](https://github.com/jschoeley/tricolore/).
-
-![Example of maps made with tricolore library](./misc/tricolore-maps.png)
 
 [Example notebook](https://observablehq.com/@mthh/choropleth-maps-based-on-ternary-composition)  
 [Example notebook (Sextant)](https://observablehq.com/@mthh/choropleth-maps-based-on-ternary-compositions-sext)
@@ -162,6 +162,10 @@ d3.json('regions.json').then((geojson) => {
     .attr('fill', (d, i) => colors[i]); // Use the computed colors
 });
 ```
+
+## Examples
+
+![Example of maps made with tricolore library](https://raw.githubusercontent.com/riatelab/tricolore.js/main/misc/tricolore-maps.png)
 
 ## API Documentation
 
