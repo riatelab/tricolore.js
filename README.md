@@ -1,7 +1,7 @@
 # Tricolore.js
 
-![npm](https://img.shields.io/npm/v/tricolore?color=green)
-![license](https://img.shields.io/npm/l/tricolore?color=green)
+[![npm](https://img.shields.io/npm/v/tricolore?color=green)](https://www.npmjs.com/package/tricolore)
+[![license](https://img.shields.io/npm/l/tricolore?color=green)](https://github.com/riatelab/tricolore.js/blob/main/LICENSE)
 
 ![Tricolore.js logo](https://raw.githubusercontent.com/riatelab/tricolore.js/main/misc/tricolore-logo.png)
 
@@ -15,13 +15,6 @@ heavily inspired by the [R tricolore package](https://github.com/jschoeley/trico
 
 ```bash
 npm install tricolore # Replace npm by you package manager of choice (yarn, pnpm, ...)
-```
-
-If you plan to use the visualization components, you'll also need D3.js, either included in your HTML
-document or installed via npm/yarn:
-
-```bash
-npm install d3 # Replace npm by you package manager of choice (yarn, pnpm, ...)
 ```
 
 ## Usage
@@ -81,12 +74,12 @@ const colors = tricolore(data, {
 console.log(colors); // An array of hex color codes
 ```
 
-### Visualization with D3.js
+### Visualization
 
 ```javascript
 import { TricoloreViz } from 'tricolore';
 
-// You can pass a DOM selector or an HTML element or a d3 selection
+// You can pass a DOM selector or an HTML element
 // as the first argument
 // The second and third arguments are width and height of the SVG container
 // where the plot will be rendered
@@ -130,6 +123,8 @@ viz.createSextantPlot(data, {
 ```
 
 ### Choropleth Maps
+
+*Note that this example uses [D3.js](https://d3js.org/) for the sake of simplicity, but it's not a requirement.*
 
 ```javascript
 import { tricolore } from 'tricolore';
