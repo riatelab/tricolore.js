@@ -11,7 +11,7 @@ export { CompositionUtils } from './core/compositionUtils';
 export { TernaryGeometry } from './core/ternaryGeometry';
 export { ColorMapping } from './core/colorMapping';
 
-// Export visualization (only if d3 is available)
+// Export visualization
 import { TricoloreViz } from './viz/tricoloreViz';
 export { TricoloreViz };
 

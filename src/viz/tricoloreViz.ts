@@ -2,37 +2,77 @@ import { TernaryPoint, VisualizationOptions } from '../types';
 import { TernaryGeometry } from '../core/ternaryGeometry';
 import { ColorMapping } from '../core/colorMapping';
 import { CompositionUtils } from '../core/compositionUtils';
-// TODO: check if this works correctly in various environments
-//  for d3 (cf. inside TricoloreViz constructor too)
-import d3 from 'd3';
 
 /**
- * D3.js visualization for Tricolore
+ * Groups an array of items into a nested Map based on one or more key functions.
+ * Mimics the behavior of d3.group.
+ *
+ * @param data - The flat array of items to group
+ * @param keys - One or more accessor functions that return the grouping key for each item
+ * @returns A nested Map where each level corresponds to one key function
+ */
+function group<T>(data: T[], ...keys: ((item: T) => unknown)[]): Map<unknown, unknown> {
+  // Base case: no keys provided, return the data as-is
+  if (keys.length === 0) return new Map();
+
+  const [firstKey, ...restKeys] = keys;
+  const map = new Map<unknown, unknown>();
+
+  // Group items by the first key
+  for (const item of data) {
+    const k = firstKey(item);
+    if (!map.has(k)) map.set(k, []);
+    (map.get(k) as T[]).push(item);
+  }
+
+  // Recursively group by remaining keys
+  if (restKeys.length > 0) {
+    for (const [k, values] of map) {
+      map.set(k, group(values as T[], ...restKeys));
+    }
+  }
+
+  return map;
+}
+
+/**
+ * Helper to create an SVG element with a given tag and attributes
+ */
+function createSvgElement(tag: string, attrs: Record<string, string | number> = {}): SVGElement {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    el.setAttribute(key, String(value));
+  }
+  return el;
+}
+
+/**
+ * SVG visualization for Tricolore
  */
 export class TricoloreViz {
-  private container: any; // D3Selection;
+  private container: Element;
   private readonly width: number;
   private readonly height: number;
   private margin: { top: number; right: number; bottom: number; left: number };
-  private svg: any; // D3Selection;
-  private triangle: any; // D3Selection;
-  private legend: any; // D3Selection;
-  private circles: any; // D3Selection
+  private svg: SVGSVGElement;
+  private triangle: SVGGElement;
+  private legend: SVGGElement;
+  private circles: SVGGElement;
   private canvas: HTMLCanvasElement | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
 
   /**
    * Create a TricoloreViz instance
    *
-   * @param selector - CSS selector for container or D3 selection
+   * @param selector - CSS selector for container element
    * @param width - Width of the visualization
    * @param height - Height of the visualization
    * @param margin - Margins around the visualization
    *
-   * @throws Error - If D3.js is not available
+   * @throws Error - If the container element is not found
    */
   constructor(
-    selector: string | any,
+    selector: string | Element,
     width: number = 650,
     height: number = 520,
     margin: { top: number; right: number; bottom: number; left: number } = {
@@ -42,35 +82,38 @@ export class TricoloreViz {
       left: 60,
     }
   ) {
-    // Try to detect if d3 is available
-    // TODO: check if this works correctly in various environments
-    if (typeof d3 !== 'object' || typeof d3.select !== 'function') {
-      throw new Error(
-        'D3.js is required for visualization. Please install it with "npm install d3" or include it in your HTML.'
-      );
+    const container = typeof selector === 'string' ? document.querySelector(selector) : selector;
+
+    if (!container) {
+      throw new Error(`Container element not found for selector: ${selector}`);
     }
 
-    this.container = d3.select(selector);
-
+    this.container = container;
     this.width = width;
     this.height = height;
     this.margin = margin;
 
     // Create SVG container
-    this.svg = this.container.append('svg').attr('width', width).attr('height', height);
+    this.svg = createSvgElement('svg', { width, height }) as SVGSVGElement;
+    this.container.appendChild(this.svg);
 
     // Create group for the triangle
-    this.triangle = this.svg
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    this.triangle = createSvgElement('g', {
+      transform: `translate(${margin.left},${margin.top})`,
+    }) as SVGGElement;
+    this.svg.appendChild(this.triangle);
 
     // Create group for legending elements (axis names and ticks)
-    this.legend = this.svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+    this.legend = createSvgElement('g', {
+      transform: `translate(${margin.left},${margin.top})`,
+    }) as SVGGElement;
+    this.svg.appendChild(this.legend);
 
     // Create group for data points
-    this.circles = this.svg
-      .append('g')
-      .attr('transform', `translate(${margin.left},${margin.top})`);
+    this.circles = createSvgElement('g', {
+      transform: `translate(${margin.left},${margin.top})`,
+    }) as SVGGElement;
+    this.svg.appendChild(this.circles);
   }
 
   /**
@@ -105,13 +148,13 @@ export class TricoloreViz {
 
     // Remove any existing canvas
     if (this.canvas) {
-      d3.select(this.canvas).remove();
+      this.canvas.remove();
     }
 
     // Clear previous contents
-    this.triangle.selectAll('*').remove();
-    this.legend.selectAll('*').remove();
-    this.circles.selectAll('*').remove();
+    this.triangle.innerHTML = '';
+    this.legend.innerHTML = '';
+    this.circles.innerHTML = '';
 
     // Create canvas for continuous color rendering
     this.canvas = document.createElement('canvas');
@@ -125,13 +168,14 @@ export class TricoloreViz {
     this.drawContinuousTriangle(size, center, hue, chroma, lightness, contrast, spread);
 
     // Position canvas
-    this.triangle
-      .append('image')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', size)
-      .attr('height', size)
-      .attr('href', this.canvas.toDataURL());
+    const image = createSvgElement('image', {
+      x: 0,
+      y: 0,
+      width: size,
+      height: size,
+      href: this.canvas.toDataURL(),
+    });
+    this.triangle.appendChild(image);
 
     // Add triangle border and axes using SVG
     this.drawTriangleFrame(size, labels, center, showCenter, showLines, labelPosition);
@@ -171,9 +215,9 @@ export class TricoloreViz {
     const size = Math.min(plotWidth, plotHeight);
 
     // Clear previous contents
-    this.triangle.selectAll('*').remove();
-    this.legend.selectAll('*').remove();
-    this.circles.selectAll('*').remove();
+    this.triangle.innerHTML = '';
+    this.legend.innerHTML = '';
+    this.circles.innerHTML = '';
 
     // Generate mesh centroids and vertices
     const centroids = TernaryGeometry.ternaryMeshCentroids(breaks);
@@ -193,10 +237,10 @@ export class TricoloreViz {
     );
 
     // Group vertices by triangle id
-    const triangleGroups = d3.group(vertices, (d: any) => d.id);
+    const triangleGroups = group(vertices, (d: any) => d.id);
 
     // Create a polygon for each triangle
-    triangleGroups.forEach((triangleVertices: any, id: string) => {
+    triangleGroups.forEach((triangleVertices: any, id: unknown) => {
       const points = triangleVertices
         .map((v: any) => {
           const [x, y] = this.ternaryToSvgCoords([v.p1, v.p2, v.p3], size);
@@ -204,13 +248,14 @@ export class TricoloreViz {
         })
         .join(' ');
 
-      const color = colors[Number(id) - 1].rgb;
+      const color = colors[Number(id) - 1].rgb || '';
 
-      this.triangle
-        .append('polygon')
-        .attr('points', points)
-        .attr('fill', color)
-        .attr('stroke', 'none');
+      const polygon = createSvgElement('polygon', {
+        points,
+        fill: color,
+        stroke: 'none',
+      });
+      this.triangle.appendChild(polygon);
     });
 
     // Draw triangle border and axes
@@ -253,18 +298,18 @@ export class TricoloreViz {
     const size = Math.min(plotWidth, plotHeight);
 
     // Clear previous contents
-    this.triangle.selectAll('*').remove();
-    this.legend.selectAll('*').remove();
-    this.circles.selectAll('*').remove();
+    this.triangle.innerHTML = '';
+    this.legend.innerHTML = '';
+    this.circles.innerHTML = '';
 
     // Generate sextant vertices
     const vertices = TernaryGeometry.ternarySextantVertices(center);
 
     // Group vertices by sextant id
-    const sextantGroups = d3.group(vertices, (d: any) => d.id);
+    const sextantGroups = group(vertices, (d: any) => d.id);
 
     // Create a polygon for each sextant
-    sextantGroups.forEach((sextantVertices: any, id: string) => {
+    sextantGroups.forEach((sextantVertices: any, id: unknown) => {
       // Sort vertices by vertex id to ensure proper polygon drawing
       sextantVertices.sort((a: any, b: any) => a.vertex - b.vertex);
 
@@ -277,11 +322,12 @@ export class TricoloreViz {
 
       const colorIndex = Number(id) - 1;
 
-      this.triangle
-        .append('polygon')
-        .attr('points', points)
-        .attr('fill', values[colorIndex])
-        .attr('stroke', 'none');
+      const polygon = createSvgElement('polygon', {
+        points,
+        fill: values[colorIndex],
+        stroke: 'none',
+      });
+      this.triangle.appendChild(polygon);
     });
 
     // Draw triangle border and axes
@@ -372,12 +418,13 @@ export class TricoloreViz {
 
     // Create the triangle border
     const points = svgCorners.map((p) => p.join(',')).join(' ');
-    this.triangle
-      .append('polygon')
-      .attr('points', points)
-      .attr('fill', 'none')
-      .attr('stroke', 'black')
-      .attr('stroke-width', 1);
+    const border = createSvgElement('polygon', {
+      points,
+      fill: 'none',
+      stroke: 'black',
+      'stroke-width': 1,
+    });
+    this.triangle.appendChild(border);
 
     // Add axis names
     if (labelPosition === 'edge') {
@@ -396,17 +443,15 @@ export class TricoloreViz {
       const rotateValues = [-60, 60, 0];
 
       labels.forEach((label, i) => {
-        this.legend
-          .append('text')
-          .attr('x', labelPositions[i][0])
-          .attr('y', labelPositions[i][1])
-          .attr('text-anchor', 'middle')
-          .attr('dominant-baseline', 'middle')
-          .attr(
-            'transform',
-            `rotate(${rotateValues[i]},${labelPositions[i][0]},${labelPositions[i][1]})`
-          )
-          .text(label);
+        const text = createSvgElement('text', {
+          x: labelPositions[i][0],
+          y: labelPositions[i][1],
+          'text-anchor': 'middle',
+          'dominant-baseline': 'middle',
+          transform: `rotate(${rotateValues[i]},${labelPositions[i][0]},${labelPositions[i][1]})`,
+        });
+        text.textContent = label;
+        this.legend.appendChild(text);
       });
     } else {
       // 'corner'
@@ -417,12 +462,13 @@ export class TricoloreViz {
       ];
 
       labels.forEach((label, i) => {
-        this.legend
-          .append('text')
-          .attr('x', labelPositions[i][0])
-          .attr('y', labelPositions[i][1])
-          .attr('text-anchor', 'middle')
-          .text(label);
+        const text = createSvgElement('text', {
+          x: labelPositions[i][0],
+          y: labelPositions[i][1],
+          'text-anchor': 'middle',
+        });
+        text.textContent = label;
+        this.legend.appendChild(text);
       });
     }
 
@@ -437,15 +483,17 @@ export class TricoloreViz {
           this.ternaryToSvgCoords([val, 1 - val, 0], size),
         ];
 
-        this.legend
-          .append('line')
-          .attr('x1', line[0][0])
-          .attr('y1', line[0][1])
-          .attr('x2', line[1][0])
-          .attr('y2', line[1][1])
-          .attr('stroke', '#aaa')
-          .attr('stroke-width', 0.5)
-          .attr('opacity', 0.7);
+        this.legend.appendChild(
+          createSvgElement('line', {
+            x1: line[0][0],
+            y1: line[0][1],
+            x2: line[1][0],
+            y2: line[1][1],
+            stroke: '#aaa',
+            'stroke-width': 0.5,
+            opacity: 0.7,
+          })
+        );
       });
 
       // p2 grid lines
@@ -455,15 +503,17 @@ export class TricoloreViz {
           this.ternaryToSvgCoords([1 - val, val, 0], size),
         ];
 
-        this.legend
-          .append('line')
-          .attr('x1', line[0][0])
-          .attr('y1', line[0][1])
-          .attr('x2', line[1][0])
-          .attr('y2', line[1][1])
-          .attr('stroke', '#aaa')
-          .attr('stroke-width', 0.5)
-          .attr('opacity', 0.7);
+        this.legend.appendChild(
+          createSvgElement('line', {
+            x1: line[0][0],
+            y1: line[0][1],
+            x2: line[1][0],
+            y2: line[1][1],
+            stroke: '#aaa',
+            'stroke-width': 0.5,
+            opacity: 0.7,
+          })
+        );
       });
 
       // p3 grid lines
@@ -473,15 +523,17 @@ export class TricoloreViz {
           this.ternaryToSvgCoords([0, 1 - val, val], size),
         ];
 
-        this.legend
-          .append('line')
-          .attr('x1', line[0][0])
-          .attr('y1', line[0][1])
-          .attr('x2', line[1][0])
-          .attr('y2', line[1][1])
-          .attr('stroke', '#aaa')
-          .attr('stroke-width', 0.5)
-          .attr('opacity', 0.7);
+        this.legend.appendChild(
+          createSvgElement('line', {
+            x1: line[0][0],
+            y1: line[0][1],
+            x2: line[1][0],
+            y2: line[1][1],
+            stroke: '#aaa',
+            'stroke-width': 0.5,
+            opacity: 0.7,
+          })
+        );
       });
     }
 
@@ -489,13 +541,14 @@ export class TricoloreViz {
     if (showCenter) {
       const [cx, cy] = this.ternaryToSvgCoords(center, size);
 
-      this.triangle
-        .append('circle')
-        .attr('cx', cx)
-        .attr('cy', cy)
-        .attr('r', 3)
-        .attr('fill', 'black')
-        .attr('stroke', 'white');
+      const circle = createSvgElement('circle', {
+        cx,
+        cy,
+        r: 3,
+        fill: 'black',
+        stroke: 'white',
+      });
+      this.triangle.appendChild(circle);
 
       const p1Line = [
         this.ternaryToSvgCoords([center[0], 0, 1 - center[0]], size),
@@ -513,15 +566,17 @@ export class TricoloreViz {
       ];
 
       [p1Line, p2Line, p3Line].forEach((line) => {
-        this.triangle
-          .append('line')
-          .attr('x1', line[0][0])
-          .attr('y1', line[0][1])
-          .attr('x2', line[1][0])
-          .attr('y2', line[1][1])
-          .attr('stroke', 'black')
-          .attr('stroke-width', 0.5)
-          .attr('opacity', 0.5);
+        this.triangle.appendChild(
+          createSvgElement('line', {
+            x1: line[0][0],
+            y1: line[0][1],
+            x2: line[1][0],
+            y2: line[1][1],
+            stroke: 'black',
+            'stroke-width': 0.5,
+            opacity: 0.5,
+          })
+        );
       });
     }
 
@@ -531,39 +586,42 @@ export class TricoloreViz {
         this.ternaryToSvgCoords([val, 1 - val, 0], size),
         this.ternaryToSvgCoords([val, 0, 1 - val], size),
       ];
-      this.legend
-        .append('text')
-        .attr('x', line[0][0] - 5)
-        .attr('y', line[0][1])
-        .attr('text-anchor', 'end')
-        .attr('font-size', '10px')
-        .text(`${val * 100}%`);
+      const text = createSvgElement('text', {
+        x: line[0][0] - 5,
+        y: line[0][1],
+        'text-anchor': 'end',
+        'font-size': '10px',
+      });
+      text.textContent = `${val * 100}%`;
+      this.legend.appendChild(text);
     });
     gridValues.forEach((val) => {
       const line = [
         this.ternaryToSvgCoords([0, val, 1 - val], size),
         this.ternaryToSvgCoords([1 - val, val, 0], size),
       ];
-      this.legend
-        .append('text')
-        .attr('x', line[0][0] + 5)
-        .attr('y', line[0][1])
-        .attr('text-anchor', 'start')
-        .attr('font-size', '10px')
-        .text(`${val * 100}%`);
+      const text = createSvgElement('text', {
+        x: line[0][0] + 5,
+        y: line[0][1],
+        'text-anchor': 'start',
+        'font-size': '10px',
+      });
+      text.textContent = `${val * 100}%`;
+      this.legend.appendChild(text);
     });
     gridValues.forEach((val) => {
       const line = [
         this.ternaryToSvgCoords([1 - val, 0, val], size),
         this.ternaryToSvgCoords([0, 1 - val, val], size),
       ];
-      this.legend
-        .append('text')
-        .attr('x', line[0][0])
-        .attr('y', line[0][1] + 10)
-        .attr('text-anchor', 'middle')
-        .attr('font-size', '10px')
-        .text(`${val * 100}%`);
+      const text = createSvgElement('text', {
+        x: line[0][0],
+        y: line[0][1] + 10,
+        'text-anchor': 'middle',
+        'font-size': '10px',
+      });
+      text.textContent = `${val * 100}%`;
+      this.legend.appendChild(text);
     });
   }
 
@@ -590,14 +648,16 @@ export class TricoloreViz {
       if (p) {
         const [x, y] = this.ternaryToSvgCoords(p, size);
 
-        this.circles
-          .append('circle')
-          .datum({ point: p, id: i })
-          .attr('cx', x)
-          .attr('cy', y)
-          .attr('r', 2)
-          .attr('fill', 'black')
-          .attr('opacity', 0.5);
+        const circle = createSvgElement('circle', {
+          cx: x,
+          cy: y,
+          r: 2,
+          fill: 'black',
+          opacity: 0.5,
+        });
+        // Attach data as a property (replaces d3's .datum())
+        (circle as any).__data__ = { point: p, id: i };
+        this.circles.appendChild(circle);
       }
     });
   }
