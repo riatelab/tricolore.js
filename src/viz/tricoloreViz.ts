@@ -38,10 +38,15 @@ function group<T>(data: T[], ...keys: ((item: T) => unknown)[]): Map<unknown, un
 /**
  * Helper to create an SVG element with a given tag and attributes
  */
-function createSvgElement(tag: string, attrs: Record<string, string | number> = {}): SVGElement {
+function createSvgElement(
+  tag: string,
+  attrs: Record<string, string | number | null> = {}
+): SVGElement {
   const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
   for (const [key, value] of Object.entries(attrs)) {
-    el.setAttribute(key, String(value));
+    if (value !== null) {
+      el.setAttribute(key, String(value));
+    }
   }
   return el;
 }
@@ -248,7 +253,7 @@ export class TricoloreViz {
         })
         .join(' ');
 
-      const color = colors[Number(id) - 1].rgb || '';
+      const color = colors[Number(id) - 1].rgb;
 
       const polygon = createSvgElement('polygon', {
         points,
