@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- BREAKING: Update the `createContinuousPlot`, `createDiscretePlot` and `createSextantPlot` methods of the `TricoloreViz`
+  class to return the SVG element instead of adding to a given container. This allows users to directly manipulate
+  or append the generated SVG to the DOM.
+
 - Improve the `CompositionUtils.validateTernaryPoints` function to make it more flexible by allowing the user
   to select the tolerance to be taken into account during the comparison,
   as well as the value that the sum of the three components must meet.
