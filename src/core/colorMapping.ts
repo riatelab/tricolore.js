@@ -66,7 +66,7 @@ export class ColorMapping {
           c: null,
           l: null,
           rgb: null,
-        } as TricoloreResult;
+        };
       }
 
       // Scale proportions by maximum chroma
@@ -145,7 +145,7 @@ export class ColorMapping {
           p3: P[i][2],
           sextant: null,
           rgb: null,
-        } as SextantResult;
+        };
       }
 
       const sextant = sextants[i];
