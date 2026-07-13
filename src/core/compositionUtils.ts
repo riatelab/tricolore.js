@@ -91,13 +91,13 @@ export class CompositionUtils {
    * Validate ternary points
    *
    * @param P - Array of ternary points to validate
-   * @param sumTo - The total that the three components must add up to
+   * @param sumValue - The total that the three components must add up to
    * @param tol - The tolerance to be taken into account when checking whether the points add up to 1.
    * @throws Error if any point has negative values or values don't sum to approximately 1
    */
   static validateTernaryPoints(
     P: (TernaryPoint | null)[],
-    sumTo: number = 1,
+    sumValue: number = 1,
     tol: number = 1e-3
   ): void {
     for (let i = 0; i < P.length; i++) {
@@ -118,9 +118,9 @@ export class CompositionUtils {
       }
 
       const sum = p[0] + p[1] + p[2];
-      if (Math.abs(sum - sumTo) > tol) {
+      if (Math.abs(sum - sumValue) > tol) {
         throw new Error(
-          `Ternary point components must sum to ${sumTo}, got ${sum} ([${p}]) at position ${i} of the input array`
+          `Ternary point components must sum to ${sumValue}, got ${sum} ([${p}]) at position ${i} of the input array`
         );
       }
     }
