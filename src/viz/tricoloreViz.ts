@@ -69,15 +69,11 @@ export class TricoloreViz {
   /**
    * Create a TricoloreViz instance
    *
-   * @param selector - CSS selector for container element
    * @param width - Width of the visualization
    * @param height - Height of the visualization
    * @param margin - Margins around the visualization
-   *
-   * @throws Error - If the container element is not found
    */
   constructor(
-    selector: string | Element,
     width: number = 650,
     height: number = 520,
     margin: { top: number; right: number; bottom: number; left: number } = {
@@ -87,20 +83,12 @@ export class TricoloreViz {
       left: 60,
     }
   ) {
-    const container = typeof selector === 'string' ? document.querySelector(selector) : selector;
-
-    if (!container) {
-      throw new Error(`Container element not found for selector: ${selector}`);
-    }
-
-    this.container = container;
     this.width = width;
     this.height = height;
     this.margin = margin;
 
     // Create SVG container
     this.svg = createSvgElement('svg', { width, height }) as SVGSVGElement;
-    this.container.appendChild(this.svg);
 
     // Create group for the triangle
     this.triangle = createSvgElement('g', {
@@ -108,7 +96,7 @@ export class TricoloreViz {
     }) as SVGGElement;
     this.svg.appendChild(this.triangle);
 
-    // Create group for legending elements (axis names and ticks)
+    // Create group for legend elements (axis names and ticks)
     this.legend = createSvgElement('g', {
       transform: `translate(${margin.left},${margin.top})`,
     }) as SVGGElement;
@@ -132,7 +120,7 @@ export class TricoloreViz {
   createContinuousPlot(
     data: TernaryPoint[] = [],
     options: Partial<VisualizationOptions> = {}
-  ): void {
+  ): SVGSVGElement {
     const {
       center = [1 / 3, 1 / 3, 1 / 3],
       hue = 80,
@@ -189,6 +177,8 @@ export class TricoloreViz {
     if (showData && data.length > 0) {
       this.addDataPoints(data, size);
     }
+
+    return this.svg;
   }
 
   /**
@@ -199,7 +189,10 @@ export class TricoloreViz {
    *
    * @throws Error - If showData is true and data contains invalid ternary points
    */
-  createDiscretePlot(data: TernaryPoint[] = [], options: Partial<VisualizationOptions> = {}): void {
+  createDiscretePlot(
+    data: TernaryPoint[] = [],
+    options: Partial<VisualizationOptions> = {}
+  ): SVGSVGElement {
     const {
       center = [1 / 3, 1 / 3, 1 / 3],
       breaks = 4,
@@ -270,6 +263,8 @@ export class TricoloreViz {
     if (showData && data.length > 0) {
       this.addDataPoints(data, size);
     }
+
+    return this.svg;
   }
 
   /**
@@ -283,7 +278,7 @@ export class TricoloreViz {
   createSextantPlot(
     data: TernaryPoint[] = [],
     options: Partial<VisualizationOptions> & { values?: string[] } = {}
-  ): void {
+  ): SVGSVGElement {
     const {
       center = [1 / 3, 1 / 3, 1 / 3],
       values = ['#FFFF00', '#B3DCC3', '#01A0C6', '#B8B3D8', '#F11D8C', '#FFB3B3'],
@@ -342,6 +337,8 @@ export class TricoloreViz {
     if (showData && data.length > 0) {
       this.addDataPoints(data, size);
     }
+
+    return this.svg;
   }
 
   /**
