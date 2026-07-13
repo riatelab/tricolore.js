@@ -11,7 +11,7 @@
     "require": "./dist/index.cjs.js",
     "default": "./dist/index.umd.js"
   },
-  "types": "dist/types.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "src"
