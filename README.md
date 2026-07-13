@@ -79,14 +79,12 @@ console.log(colors); // An array of hex color codes
 ```javascript
 import { TricoloreViz } from 'tricolore';
 
-// You can pass a DOM selector or an HTML element
-// as the first argument
-// The second and third arguments are width and height of the SVG container
-// where the plot will be rendered
-const viz = new TricoloreViz('#container', 500, 500);
+// The first and second arguments are width and height of the SVG container
+// where the plot will be rendered, and the optionnal third argument is a margin object
+const viz = new TricoloreViz(500, 500);
 
-// Create a continuous ternary plot
-viz.createContinuousPlot(data, {
+// Create a continuous ternary plot, returns an SVG element
+const p1 = viz.createContinuousPlot(data, {
   hue: 80,
   chroma: 140,
   lightness: 80,
@@ -102,8 +100,8 @@ viz.createContinuousPlot(data, {
   labelPosition: 'corner',
 });
 
-// Create a discrete ternary plot
-viz.createDiscretePlot(data, {
+// Create a discrete ternary plot, returns an SVG element
+const p2 = viz.createDiscretePlot(data, {
   hue: 80,
   chroma: 140,
   lightness: 80,
@@ -114,8 +112,8 @@ viz.createDiscretePlot(data, {
   labelPosition: 'edge',
 });
 
-// Create a sextant ternary plot
-viz.createSextantPlot(data, {
+// Create a sextant ternary plot, returns an SVG element
+const p3 = viz.createSextantPlot(data, {
   values: ['#FFFF00', '#B3DCC3', '#01A0C6', '#B8B3D8', '#F11D8C', '#FFB3B3'],
   showData: true,
   labelPosition: 'edge',
