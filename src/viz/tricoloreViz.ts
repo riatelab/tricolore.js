@@ -55,7 +55,6 @@ function createSvgElement(
  * SVG visualization for Tricolore
  */
 export class TricoloreViz {
-  private container: Element;
   private readonly width: number;
   private readonly height: number;
   private margin: { top: number; right: number; bottom: number; left: number };
@@ -155,7 +154,7 @@ export class TricoloreViz {
     this.canvas.height = size;
     this.ctx = this.canvas.getContext('2d');
 
-    if (!this.ctx) return;
+    if (!this.ctx) throw new Error('Failed to get 2D context for canvas');
 
     // Draw the colored triangle on canvas
     this.drawContinuousTriangle(size, center, hue, chroma, lightness, contrast, spread);
