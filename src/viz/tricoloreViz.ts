@@ -3,6 +3,9 @@ import { TernaryGeometry } from '../core/ternaryGeometry';
 import { ColorMapping } from '../core/colorMapping';
 import { CompositionUtils } from '../core/compositionUtils';
 
+// Helper constant for the height of an equilateral triangle with side length 1
+const H_EQ = Math.sqrt(3) / 2;
+
 /**
  * Groups an array of items into a nested Map based on one or more key functions.
  * Mimics the behavior of d3.group.
@@ -109,6 +112,23 @@ export class TricoloreViz {
   }
 
   /**
+   * Compute dimensions for an equilateral ternary triangle.
+   * - plotSize = side length (also the triangle width in this coordinate system)
+   * - triangleHeight = sqrt(3)/2 * plotSize
+   *
+   * Ensures both dimensions fit into available plotting area.
+   */
+  private getPlotDimensions(
+    plotWidth: number,
+    plotHeight: number
+  ): { plotSize: number; triangleHeight: number } {
+    const maxSizeFromHeight = (2 / Math.sqrt(3)) * plotHeight;
+    const plotSize = Math.min(plotWidth, maxSizeFromHeight);
+    const triangleHeight = H_EQ * plotSize;
+    return { plotSize, triangleHeight };
+  }
+
+  /**
    * Create a continuous ternary plot using canvas
    *
    * @param data - Array of ternary points
@@ -136,7 +156,7 @@ export class TricoloreViz {
 
     const plotWidth = this.width - this.margin.left - this.margin.right;
     const plotHeight = this.height - this.margin.top - this.margin.bottom;
-    const size = Math.min(plotWidth, plotHeight);
+    const { plotSize, triangleHeight } = this.getPlotDimensions(plotWidth, plotHeight);
 
     // Remove any existing canvas
     if (this.canvas) {
@@ -148,33 +168,52 @@ export class TricoloreViz {
     this.legend.innerHTML = '';
     this.circles.innerHTML = '';
 
-    // Create canvas for continuous color rendering
+    // Create canvas for continuous color rendering (non-square: width != height)
     this.canvas = document.createElement('canvas');
-    this.canvas.width = size;
-    this.canvas.height = size;
+    const canvasWidth = Math.max(1, Math.round(plotSize));
+    const canvasHeight = Math.max(1, Math.round(triangleHeight));
+    this.canvas.width = canvasWidth;
+    this.canvas.height = canvasHeight;
     this.ctx = this.canvas.getContext('2d');
 
     if (!this.ctx) throw new Error('Failed to get 2D context for canvas');
 
     // Draw the colored triangle on canvas
-    this.drawContinuousTriangle(size, center, hue, chroma, lightness, contrast, spread);
+    this.drawContinuousTriangle(
+      canvasWidth,
+      canvasHeight,
+      center,
+      hue,
+      chroma,
+      lightness,
+      contrast,
+      spread
+    );
 
     // Position canvas
     const image = createSvgElement('image', {
       x: 0,
       y: 0,
-      width: size,
-      height: size,
+      width: plotSize,
+      height: triangleHeight,
       href: this.canvas.toDataURL(),
     });
     this.triangle.appendChild(image);
 
     // Add triangle border and axes using SVG
-    this.drawTriangleFrame(size, labels, center, showCenter, showLines, labelPosition);
+    this.drawTriangleFrame(
+      plotSize,
+      triangleHeight,
+      labels,
+      center,
+      showCenter,
+      showLines,
+      labelPosition
+    );
 
     // Add data points if requested
     if (showData && data.length > 0) {
-      this.addDataPoints(data, size);
+      this.addDataPoints(data, plotSize, triangleHeight);
     }
 
     return this.svg;
@@ -209,7 +248,7 @@ export class TricoloreViz {
 
     const plotWidth = this.width - this.margin.left - this.margin.right;
     const plotHeight = this.height - this.margin.top - this.margin.bottom;
-    const size = Math.min(plotWidth, plotHeight);
+    const { plotSize, triangleHeight } = this.getPlotDimensions(plotWidth, plotHeight);
 
     // Clear previous contents
     this.triangle.innerHTML = '';
@@ -240,7 +279,7 @@ export class TricoloreViz {
     triangleGroups.forEach((triangleVertices: any, id: unknown) => {
       const points = triangleVertices
         .map((v: any) => {
-          const [x, y] = this.ternaryToSvgCoords([v.p1, v.p2, v.p3], size);
+          const [x, y] = this.ternaryToSvgCoords([v.p1, v.p2, v.p3], plotSize, triangleHeight);
           return `${x},${y}`;
         })
         .join(' ');
@@ -256,11 +295,19 @@ export class TricoloreViz {
     });
 
     // Draw triangle border and axes
-    this.drawTriangleFrame(size, labels, center, showCenter, showLines, labelPosition);
+    this.drawTriangleFrame(
+      plotSize,
+      triangleHeight,
+      labels,
+      center,
+      showCenter,
+      showLines,
+      labelPosition
+    );
 
     // Add data points if requested
     if (showData && data.length > 0) {
-      this.addDataPoints(data, size);
+      this.addDataPoints(data, plotSize, triangleHeight);
     }
 
     return this.svg;
@@ -294,7 +341,7 @@ export class TricoloreViz {
 
     const plotWidth = this.width - this.margin.left - this.margin.right;
     const plotHeight = this.height - this.margin.top - this.margin.bottom;
-    const size = Math.min(plotWidth, plotHeight);
+    const { plotSize, triangleHeight } = this.getPlotDimensions(plotWidth, plotHeight);
 
     // Clear previous contents
     this.triangle.innerHTML = '';
@@ -314,7 +361,7 @@ export class TricoloreViz {
 
       const points = sextantVertices
         .map((v: any) => {
-          const [x, y] = this.ternaryToSvgCoords([v.p1, v.p2, v.p3], size);
+          const [x, y] = this.ternaryToSvgCoords([v.p1, v.p2, v.p3], plotSize, triangleHeight);
           return `${x},${y}`;
         })
         .join(' ');
@@ -330,11 +377,19 @@ export class TricoloreViz {
     });
 
     // Draw triangle border and axes
-    this.drawTriangleFrame(size, labels, center, showCenter, showLines, labelPosition);
+    this.drawTriangleFrame(
+      plotSize,
+      triangleHeight,
+      labels,
+      center,
+      showCenter,
+      showLines,
+      labelPosition
+    );
 
     // Add data points if requested
     if (showData && data.length > 0) {
-      this.addDataPoints(data, size);
+      this.addDataPoints(data, plotSize, triangleHeight);
     }
 
     return this.svg;
@@ -344,7 +399,8 @@ export class TricoloreViz {
    * Draw the continuous colored triangle on canvas
    */
   private drawContinuousTriangle(
-    size: number,
+    width: number,
+    height: number,
     center: TernaryPoint,
     hue: number,
     chroma: number,
@@ -354,13 +410,12 @@ export class TricoloreViz {
   ): void {
     if (!this.ctx) return;
 
-    const resolution = size;
-    const imageData = this.ctx.createImageData(resolution, resolution);
+    const imageData = this.ctx.createImageData(width, height);
 
-    for (let y = 0; y < resolution; y++) {
-      for (let x = 0; x < resolution; x++) {
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
         // Convert from pixel coordinates to ternary coordinates
-        const [p1, p2, p3] = this.svgToTernaryCoords([x, y], resolution);
+        const [p1, p2, p3] = this.svgToTernaryCoords([x, y], width, height);
 
         // Skip pixels outside the triangle
         if (p1 < 0 || p2 < 0 || p3 < 0 || p1 > 1 || p2 > 1 || p3 > 1) {
@@ -385,7 +440,7 @@ export class TricoloreViz {
         const b = parseInt(color.rgb!.slice(5, 7), 16);
 
         // Set the pixel color
-        const pixelIndex = (y * resolution + x) * 4;
+        const pixelIndex = (y * width + x) * 4;
         imageData.data[pixelIndex] = r;
         imageData.data[pixelIndex + 1] = g;
         imageData.data[pixelIndex + 2] = b;
@@ -400,7 +455,8 @@ export class TricoloreViz {
    * Draw the triangle frame, axes and labels
    */
   private drawTriangleFrame(
-    size: number,
+    width: number,
+    height: number,
     labels: [string, string, string],
     center: TernaryPoint,
     showCenter: boolean,
@@ -415,7 +471,7 @@ export class TricoloreViz {
       [0, 0, 1], // bottom right (p3)
     ] as TernaryPoint[];
 
-    const svgCorners = corners.map((p) => this.ternaryToSvgCoords(p, size));
+    const svgCorners = corners.map((p) => this.ternaryToSvgCoords(p, width, height));
 
     // Create the triangle border
     const points = svgCorners.map((p) => p.join(',')).join(' ');
@@ -480,8 +536,8 @@ export class TricoloreViz {
       // p1 grid lines
       gridValues.forEach((val) => {
         const line = [
-          this.ternaryToSvgCoords([val, 0, 1 - val], size),
-          this.ternaryToSvgCoords([val, 1 - val, 0], size),
+          this.ternaryToSvgCoords([val, 0, 1 - val], width, height),
+          this.ternaryToSvgCoords([val, 1 - val, 0], width, height),
         ];
 
         this.legend.appendChild(
@@ -500,8 +556,8 @@ export class TricoloreViz {
       // p2 grid lines
       gridValues.forEach((val) => {
         const line = [
-          this.ternaryToSvgCoords([0, val, 1 - val], size),
-          this.ternaryToSvgCoords([1 - val, val, 0], size),
+          this.ternaryToSvgCoords([0, val, 1 - val], width, height),
+          this.ternaryToSvgCoords([1 - val, val, 0], width, height),
         ];
 
         this.legend.appendChild(
@@ -520,8 +576,8 @@ export class TricoloreViz {
       // p3 grid lines
       gridValues.forEach((val) => {
         const line = [
-          this.ternaryToSvgCoords([1 - val, 0, val], size),
-          this.ternaryToSvgCoords([0, 1 - val, val], size),
+          this.ternaryToSvgCoords([1 - val, 0, val], width, height),
+          this.ternaryToSvgCoords([0, 1 - val, val], width, height),
         ];
 
         this.legend.appendChild(
@@ -540,7 +596,7 @@ export class TricoloreViz {
 
     // Show center point (+ extended lines from this center) if requested
     if (showCenter) {
-      const [cx, cy] = this.ternaryToSvgCoords(center, size);
+      const [cx, cy] = this.ternaryToSvgCoords(center, width, height);
 
       const circle = createSvgElement('circle', {
         cx,
@@ -552,18 +608,18 @@ export class TricoloreViz {
       this.triangle.appendChild(circle);
 
       const p1Line = [
-        this.ternaryToSvgCoords([center[0], 0, 1 - center[0]], size),
-        this.ternaryToSvgCoords([center[0], 1 - center[0], 0], size),
+        this.ternaryToSvgCoords([center[0], 0, 1 - center[0]], width, height),
+        this.ternaryToSvgCoords([center[0], 1 - center[0], 0], width, height),
       ];
 
       const p2Line = [
-        this.ternaryToSvgCoords([0, center[1], 1 - center[1]], size),
-        this.ternaryToSvgCoords([1 - center[1], center[1], 0], size),
+        this.ternaryToSvgCoords([0, center[1], 1 - center[1]], width, height),
+        this.ternaryToSvgCoords([1 - center[1], center[1], 0], width, height),
       ];
 
       const p3Line = [
-        this.ternaryToSvgCoords([0, 1 - center[2], center[2]], size),
-        this.ternaryToSvgCoords([1 - center[2], 0, center[2]], size),
+        this.ternaryToSvgCoords([0, 1 - center[2], center[2]], width, height),
+        this.ternaryToSvgCoords([1 - center[2], 0, center[2]], width, height),
       ];
 
       [p1Line, p2Line, p3Line].forEach((line) => {
@@ -584,8 +640,8 @@ export class TricoloreViz {
     // Add labels along the grid lines (whether lines are shown or not)
     gridValues.forEach((val) => {
       const line = [
-        this.ternaryToSvgCoords([val, 1 - val, 0], size),
-        this.ternaryToSvgCoords([val, 0, 1 - val], size),
+        this.ternaryToSvgCoords([val, 1 - val, 0], width, height),
+        this.ternaryToSvgCoords([val, 0, 1 - val], width, height),
       ];
       const text = createSvgElement('text', {
         x: line[0][0] - 5,
@@ -598,8 +654,8 @@ export class TricoloreViz {
     });
     gridValues.forEach((val) => {
       const line = [
-        this.ternaryToSvgCoords([0, val, 1 - val], size),
-        this.ternaryToSvgCoords([1 - val, val, 0], size),
+        this.ternaryToSvgCoords([0, val, 1 - val], width, height),
+        this.ternaryToSvgCoords([1 - val, val, 0], width, height),
       ];
       const text = createSvgElement('text', {
         x: line[0][0] + 5,
@@ -612,8 +668,8 @@ export class TricoloreViz {
     });
     gridValues.forEach((val) => {
       const line = [
-        this.ternaryToSvgCoords([1 - val, 0, val], size),
-        this.ternaryToSvgCoords([0, 1 - val, val], size),
+        this.ternaryToSvgCoords([1 - val, 0, val], width, height),
+        this.ternaryToSvgCoords([0, 1 - val, val], width, height),
       ];
       const text = createSvgElement('text', {
         x: line[0][0],
@@ -629,7 +685,7 @@ export class TricoloreViz {
   /**
    * Add data points to the visualization
    */
-  private addDataPoints(data: TernaryPoint[], size: number): void {
+  private addDataPoints(data: TernaryPoint[], width: number, height: number): void {
     const closed = CompositionUtils.close([...data]);
     // Validate data (this will throw an error if invalid)
     CompositionUtils.validateTernaryPoints(closed);
@@ -647,7 +703,7 @@ export class TricoloreViz {
 
     closed.forEach((p, i) => {
       if (p) {
-        const [x, y] = this.ternaryToSvgCoords(p, size);
+        const [x, y] = this.ternaryToSvgCoords(p, width, height);
 
         const circle = createSvgElement('circle', {
           cx: x,
@@ -666,15 +722,18 @@ export class TricoloreViz {
   /**
    * Convert ternary coordinates to SVG coordinates
    */
-  private ternaryToSvgCoords(p: TernaryPoint, size: number): [number, number] {
+  private ternaryToSvgCoords(p: TernaryPoint, width: number, height: number): [number, number] {
     const [x, y] = TernaryGeometry.ternaryToCartesian(p);
-    return [x * size, size - y * size];
+    // y from ternaryToCartesian is in [0, sqrt(3)/2] for an equilateral triangle of side 1
+    return [x * width, (1 - y / H_EQ) * height];
   }
 
   /**
    * Convert SVG coordinates to ternary coordinates
    */
-  private svgToTernaryCoords(point: [number, number], size: number): TernaryPoint {
-    return TernaryGeometry.cartesianToTernary(point[0] / size, 1 - point[1] / size);
+  private svgToTernaryCoords(point: [number, number], width: number, height: number): TernaryPoint {
+    const x = point[0] / width;
+    const y = (1 - point[1] / height) * H_EQ;
+    return TernaryGeometry.cartesianToTernary(x, y);
   }
 }
