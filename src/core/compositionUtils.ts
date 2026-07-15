@@ -107,12 +107,14 @@ export class CompositionUtils {
       }
       if (p.length !== 3) {
         throw new Error(
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           `Ternary point must have exactly 3 components, got ${p.length} at position ${i} of the input array`
         );
       }
 
       if (p.some((val) => val < 0)) {
         throw new Error(
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           `Ternary point contains negative values: [${p}] at position ${i} of the input array`
         );
       }
@@ -120,6 +122,7 @@ export class CompositionUtils {
       const sum = p[0] + p[1] + p[2];
       if (Math.abs(sum - sumValue) > tol) {
         throw new Error(
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           `Ternary point components must sum to ${sumValue}, got ${sum} ([${p}]) at position ${i} of the input array`
         );
       }

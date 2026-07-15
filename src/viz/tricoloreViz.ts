@@ -1,4 +1,4 @@
-import { TernaryPoint, VisualizationOptions } from '../types';
+import type { TernaryPoint, TernaryVertex, VisualizationOptions } from '../types';
 import { TernaryGeometry } from '../core/ternaryGeometry';
 import { ColorMapping } from '../core/colorMapping';
 import { CompositionUtils } from '../core/compositionUtils';
@@ -273,12 +273,12 @@ export class TricoloreViz {
     );
 
     // Group vertices by triangle id
-    const triangleGroups = group(vertices, (d: any) => d.id);
+    const triangleGroups = group(vertices, (d: TernaryVertex) => d.id);
 
     // Create a polygon for each triangle
-    triangleGroups.forEach((triangleVertices: any, id: unknown) => {
-      const points = triangleVertices
-        .map((v: any) => {
+    triangleGroups.forEach((triangleVertices, id: unknown) => {
+      const points = (triangleVertices as TernaryVertex[])
+        .map((v: TernaryVertex) => {
           const [x, y] = this.ternaryToSvgCoords([v.p1, v.p2, v.p3], plotSize, triangleHeight);
           return `${x},${y}`;
         })
@@ -352,19 +352,20 @@ export class TricoloreViz {
     const vertices = TernaryGeometry.ternarySextantVertices(center);
 
     // Group vertices by sextant id
-    const sextantGroups = group(vertices, (d: any) => d.id);
+    const sextantGroups = group(vertices, (d) => d.id);
 
     // Create a polygon for each sextant
-    sextantGroups.forEach((sextantVertices: any, id: unknown) => {
+    sextantGroups.forEach((sextantVertices, id: unknown) => {
       // Sort vertices by vertex id to ensure proper polygon drawing
-      sextantVertices.sort((a: any, b: any) => a.vertex - b.vertex);
+      (sextantVertices as TernaryVertex[]).sort((a, b) => a.vertex - b.vertex);
 
-      const points = sextantVertices
-        .map((v: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      const points = (sextantVertices as TernaryVertex[])
+        .map((v: TernaryVertex) => {
           const [x, y] = this.ternaryToSvgCoords([v.p1, v.p2, v.p3], plotSize, triangleHeight);
           return `${x},${y}`;
         })
-        .join(' ');
+        .join(' ') as string;
 
       const colorIndex = Number(id) - 1;
 
@@ -713,7 +714,8 @@ export class TricoloreViz {
           opacity: 0.5,
         });
         // Attach data as a property (replaces d3's .datum())
-        (circle as any).__data__ = { point: p, id: i };
+        (circle as SVGCircleElement & { __data__?: { point: TernaryPoint; id: number } }).__data__ =
+          { point: p, id: i };
         this.circles.appendChild(circle);
       }
     });
