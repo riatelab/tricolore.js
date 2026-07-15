@@ -59,9 +59,9 @@ export class ColorMapping {
       // (i.e. composition that contains null/undefined/NaN values)
       if (!p) {
         return {
-          p1: P[i][0],
-          p2: P[i][1],
-          p3: P[i][2],
+          p1: P[i] ? P[i][0] : NaN,
+          p2: P[i] ? P[i][1] : NaN,
+          p3: P[i] ? P[i][2] : NaN,
           h: null,
           c: null,
           l: null,
@@ -140,9 +140,9 @@ export class ColorMapping {
       // (i.e. composition that contains null/undefined/NaN values)
       if (!p) {
         return {
-          p1: P[i][0],
-          p2: P[i][1],
-          p3: P[i][2],
+          p1: P[i] ? P[i][0] : NaN,
+          p2: P[i] ? P[i][1] : NaN,
+          p3: P[i] ? P[i][2] : NaN,
           sextant: null,
           rgb: null,
         };
