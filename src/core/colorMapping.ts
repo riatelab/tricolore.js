@@ -57,7 +57,7 @@ export class ColorMapping {
     return scaled.map((p, i) => {
       // Handle invalid compositions
       // (i.e. composition that contains null/undefined/NaN values)
-      if (!p) {
+      if (!p || p.some((v) => !Number.isFinite(v))) {
         return {
           p1: P[i] ? P[i][0] : NaN,
           p2: P[i] ? P[i][1] : NaN,

@@ -51,6 +51,7 @@ export class CompositionUtils {
       if (!p) return null;
       const raw = [p[0] * c[0], p[1] * c[1], p[2] * c[2]];
       const sum = raw.reduce((a, b) => a + b, 0);
+      if (!Number.isFinite(sum) || sum === 0) return null;
       return [raw[0] / sum, raw[1] / sum, raw[2] / sum];
     });
   }
@@ -67,6 +68,7 @@ export class CompositionUtils {
       if (!p) return null;
       const raw = [Math.pow(p[0], scale), Math.pow(p[1], scale), Math.pow(p[2], scale)];
       const sum = raw.reduce((a, b) => a + b, 0);
+      if (!Number.isFinite(sum) || sum === 0) return null;
       return [raw[0] / sum, raw[1] / sum, raw[2] / sum];
     });
   }
@@ -83,6 +85,7 @@ export class CompositionUtils {
         return null;
       }
       const sum = p[0] + p[1] + p[2];
+      if (sum === 0) return null;
       return [p[0] / sum, p[1] / sum, p[2] / sum];
     });
   }
