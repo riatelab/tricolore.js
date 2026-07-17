@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Fixed
+
+- Avoid some edge cases that could generate NaN values (e.g., when all three components sum to zero).
+
+### Changed
+
+- Refactor to avoid defining some functions every time `hclToHex` is called and improve documentation about
+  this color conversion.
+
 ## 0.6.0 - 2026-07-15
 
 ### Fixed
