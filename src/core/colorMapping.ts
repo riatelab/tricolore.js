@@ -2,6 +2,25 @@ import { TernaryPoint, TricoloreResult, SextantResult, RGBColor } from '../types
 import { CompositionUtils } from './compositionUtils';
 import { TernaryGeometry } from './ternaryGeometry';
 
+// Converts a linear RGB component to its gamma-encoded sRGB equivalent
+const linearToSrgb = (v: number) => {
+  return v > 0.0031308 ? 1.055 * v ** (1 / 2.4) - 0.055 : 12.92 * v;
+};
+
+// Clamp a value to the [0, 1] range
+const clamp = (v: number) => Math.max(0, Math.min(1, v));
+
+// Convert a normalized [0, 1] value to an 8-bit integer [0, 255].
+const to8bit = (v: number) => Math.round(clamp(v) * 255);
+
+// Convert a normalized [0, 1] value to a two-character hexadecimal string.
+// Takes the normalized value to convert and return a two-character
+// hex string (e.g. "0f", "ff").
+const toHex = (v: number) => {
+  const hex = to8bit(v).toString(16);
+  return hex.length === 1 ? '0' + hex : hex;
+};
+
 /**
  * Color mapping functions
  */
@@ -162,7 +181,13 @@ export class ColorMapping {
   }
 
   /**
-   * Convert HCL color to Hex RGB
+   * Convert HCL color to Hex
+   *
+   * It uses the classic CIE Lab (D65 illuminant, unadapted sRGB matrix) formulation,
+   * with the intent of matching the convention used by R's `colorspace` package
+   * (and thus the original R `tricolore` package this library is derived from).
+   * This differs from current d3-color, which uses a D50-adapted Lab space
+   * (small to moderate hex differences from `d3.hcl(...).formatHex()` can be expected).
    *
    * @param h - Hue [0-360]
    * @param c - Chroma [0-200]
@@ -170,7 +195,6 @@ export class ColorMapping {
    * @returns Hex RGB string
    */
   static hclToHex(h: number, c: number, l: number): RGBColor {
-    // Implementation based on d3-color conversions
     // First normalize values
     h = h % 360;
     if (h < 0) h += 360;
@@ -202,30 +226,17 @@ export class ColorMapping {
     const Y = Y_n * fy;
     const Z = Z_n * fz;
 
-    // Convert XYZ to sRGB
+    // Convert CIE XYZ (D65) to linear sRGB
     let r = 3.2406 * X - 1.5372 * Y - 0.4986 * Z;
     let g = -0.9689 * X + 1.8758 * Y + 0.0415 * Z;
     let b = 0.0557 * X - 0.204 * Y + 1.057 * Z;
 
-    // Apply gamma correction and clamp
-    const gamma = (v: number) => {
-      return v > 0.0031308 ? 1.055 * v ** (1 / 2.4) - 0.055 : 12.92 * v;
-    };
+    // Apply sRGB transfer function (gamma encoding)
+    r = linearToSrgb(r);
+    g = linearToSrgb(g);
+    b = linearToSrgb(b);
 
-    r = gamma(r);
-    g = gamma(g);
-    b = gamma(b);
-
-    // Clamp and convert to 8-bit
-    const clamp = (v: number) => Math.max(0, Math.min(1, v));
-    const to8bit = (v: number) => Math.round(clamp(v) * 255);
-
-    // Convert to hex
-    const toHex = (v: number) => {
-      const hex = to8bit(v).toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
-    };
-
+    // Clamp and convert each channel to 8-bit then to hexadecimal
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
 }
