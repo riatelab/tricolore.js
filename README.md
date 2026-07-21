@@ -5,7 +5,7 @@
 
 ![Tricolore.js logo](https://raw.githubusercontent.com/riatelab/tricolore.js/main/misc/tricolore-logo.png)
 
-A JavaScript/TypeScript library for visualizing ternary compositions with choropleth maps,
+A JavaScript/TypeScript library for visualizing ternary compositions,
 heavily inspired by the [R tricolore package](https://github.com/jschoeley/tricolore/).
 
 [Example notebook](https://observablehq.com/@mthh/choropleth-maps-based-on-ternary-composition)  
@@ -77,14 +77,16 @@ console.log(colors); // An array of hex color codes
 ### Visualization
 
 ```javascript
-import { TricoloreViz } from 'tricolore';
+import { Viz } from 'tricolore';
 
-// The first and second arguments are width and height of the SVG container
-// where the plot will be rendered, and the optionnal third argument is a margin object
-const viz = new TricoloreViz(500, 500);
+const dims = {
+  width: 300,
+  height: 300,
+  margin: { top: 10, right: 10, bottom: 10, left: 10 },
+};
 
 // Create a continuous ternary plot, returns an SVG element
-const p1 = viz.createContinuousPlot(data, {
+const p1 = Viz.createContinuousPlot(data, {
   hue: 80,
   chroma: 140,
   lightness: 80,
@@ -96,12 +98,12 @@ const p1 = viz.createContinuousPlot(data, {
   showCenter: true,
   // Labels for the three corners
   labels: ['Factor 1', 'Factor 2', 'Factor 3'],
-  // Position of the labels: 'corner' (default), 'edge'
+  // Position of the labels: 'edge' (default), 'corner'
   labelPosition: 'corner',
-});
+}, dims);
 
 // Create a discrete ternary plot, returns an SVG element
-const p2 = viz.createDiscretePlot(data, {
+const p2 = Viz.createDiscretePlot(data, {
   hue: 80,
   chroma: 140,
   lightness: 80,
@@ -110,14 +112,14 @@ const p2 = viz.createDiscretePlot(data, {
   breaks: 3,
   showData: true,
   labelPosition: 'edge',
-});
+}, dims);
 
 // Create a sextant ternary plot, returns an SVG element
-const p3 = viz.createSextantPlot(data, {
+const p3 = Viz.createSextantPlot(data, {
   values: ['#FFFF00', '#B3DCC3', '#01A0C6', '#B8B3D8', '#F11D8C', '#FFB3B3'],
   showData: true,
   labelPosition: 'edge',
-});
+}, dims);
 ```
 
 ### Choropleth Maps
@@ -155,6 +157,21 @@ d3.json('regions.json').then((geojson) => {
     .attr('fill', (d, i) => colors[i]); // Use the computed colors
 });
 ```
+
+### Meaning of the color parameters for discrete and continuous color mappings
+
+**Hue**: Defines the hue of the first component (p1 - left corner). The hues of the other two components are automatically
+set to +120° (for p2 - top corner) and +240° (for p3 - right corner) on the color wheel, forming a triadic scheme.
+
+**Chroma**: Controls the maximum saturation/intensity of the pure colors at the corners of the triangle.
+The higher this value, the more vivid and distinct the colors.
+
+**Lightness**: Determines the overall brightness of the palette. Affects all colors in the triangle.
+
+**Contrast**: Controls the difference in brightness and saturation between the center (balanced mix) and the corners
+(pure components). Higher contrast makes the corners more distinct from the center.
+
+**Spread**: Controls the extent of the color gradient around the center. A higher value concentrates color differentiation near the center.
 
 ## Examples
 
