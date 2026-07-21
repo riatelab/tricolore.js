@@ -7,14 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-### Fixed
-
-- Avoid some edge cases that could generate NaN values (e.g., when all three components sum to zero).
-
 ### Changed
+
+- **BREAKING:** Replace the `TricoloreViz` instantiable class with a `Viz` utility class
+  exposing `Viz.createContinuousPlot`, `Viz.createDiscretePlot`, and `Viz.createSextantPlot` as static methods,
+  matching the other utility classes in the library.
 
 - Refactor to avoid defining some functions every time `hclToHex` is called and improve documentation about
   this color conversion.
+
+### Fixed
+
+- Avoid some edge cases that could generate NaN values (e.g., when all three components sum to zero).
 
 ## 0.6.0 - 2026-07-15
 
