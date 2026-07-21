@@ -25,7 +25,7 @@ export class CompositionUtils {
    * @param P - Array of ternary points
    * @returns The center point
    */
-  static centre(P: TernaryPoint[]): TernaryPoint {
+  static center(P: TernaryPoint[]): TernaryPoint {
     // Calculate geometric mean for each component
     const g1 = this.geometricMean(P.map((p) => p[0]));
     const g2 = this.geometricMean(P.map((p) => p[1]));
