@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exposing `Viz.createContinuousPlot`, `Viz.createDiscretePlot`, and `Viz.createSextantPlot` as static methods,
   matching the other utility classes in the library.
 
+- **BREAKING:** Rename `CompositionUtils.centre` to `CompositionUtils.center` to use American English spelling
+  as in the rest of the library.
+
 - Refactor to avoid defining some functions every time `hclToHex` is called and improve documentation about
   this color conversion.
 
