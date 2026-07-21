@@ -74,6 +74,15 @@ export interface VisualizationOptions extends TricoloreOptions {
 }
 
 /**
+ * Dimension options for ternary plots
+ */
+export interface PlotDimensions {
+  width: number;
+  height: number;
+  margin: { top: number; right: number; bottom: number; left: number };
+}
+
+/**
  * Result of tricolore color mapping
  */
 export interface TricoloreResult {

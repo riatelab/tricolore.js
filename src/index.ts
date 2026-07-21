@@ -12,8 +12,8 @@ export { TernaryGeometry } from './core/ternaryGeometry';
 export { ColorMapping } from './core/colorMapping';
 
 // Export visualization
-import { TricoloreViz } from './viz/tricoloreViz';
-export { TricoloreViz };
+import { Viz } from './viz/tricoloreViz';
+export { Viz };
 
 // Main tricolore functions
 import { ColorMapping } from './core/colorMapping';
