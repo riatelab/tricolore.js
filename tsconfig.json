@@ -14,7 +14,6 @@
     "forceConsistentCasingInFileNames": true,
     "removeComments": false
   },
-  "rootDir": "./src",
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "examples", "tests"]
 }
