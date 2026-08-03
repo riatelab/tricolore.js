@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.0 - 2026-08-03
+
+## Added
+
+- Add a new `rotateTickLabels` option to the `VisualizationOptions` interface to allow users to rotate tick labels for better readability.
+
+### Fixed
+
+- Improve positioning of the 3rd component axis label in the `TricoloreViz` (so that it's at the same distance from the triangle as the other two labels).
+
 ## 0.7.0 - 2026-07-22
 
 ### Changed
