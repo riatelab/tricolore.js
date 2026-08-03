@@ -7,13 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.8.0 - 2026-08-03
 
-## Added
+### Added
 
 - Add a new `rotateTickLabels` option to the `VisualizationOptions` interface to allow users to rotate tick labels for better readability.
 
 ### Fixed
 
-- Improve positioning of the 3rd component axis label in the `TricoloreViz` (so that it's at the same distance from the triangle as the other two labels).
+- Improve positioning of the 3rd component axis label in the `Viz` utility class (so that it's at the same distance from the triangle as the other two labels).
 
 ## 0.7.0 - 2026-07-22
 
