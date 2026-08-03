@@ -227,7 +227,7 @@ function drawTriangleFrame(
         (svgCorners[1][0] + svgCorners[2][0]) / 2 + 35,
         (svgCorners[1][1] + svgCorners[2][1]) / 2 - 14,
       ], // p2
-      [(svgCorners[0][0] + svgCorners[2][0]) / 2, (svgCorners[0][1] + svgCorners[2][1]) / 2 + 27.5], // p3
+      [(svgCorners[0][0] + svgCorners[2][0]) / 2, (svgCorners[0][1] + svgCorners[2][1]) / 2 + 35], // p3
     ];
 
     const rotateValues = [-60, 60, 0];
