@@ -10,6 +10,7 @@ heavily inspired by the [R tricolore package](https://github.com/jschoeley/trico
 
 [Example notebook](https://observablehq.com/@mthh/choropleth-maps-based-on-ternary-composition)  
 [Example notebook (Sextant)](https://observablehq.com/@mthh/choropleth-maps-based-on-ternary-compositions-sext)
+[Using Tricolore with geoviz](https://observablehq.com/@mthh/geoviz-plus-tricolore)
 
 ## Installation
 
@@ -100,6 +101,8 @@ const p1 = Viz.createContinuousPlot(data, {
   labels: ['Factor 1', 'Factor 2', 'Factor 3'],
   // Position of the labels: 'edge' (default), 'corner'
   labelPosition: 'corner',
+  // Whether to rotate the tick labels for better readability
+  rotateTickLabels: false,
 }, dims);
 
 // Create a discrete ternary plot, returns an SVG element
@@ -119,6 +122,7 @@ const p3 = Viz.createSextantPlot(data, {
   values: ['#FFFF00', '#B3DCC3', '#01A0C6', '#B8B3D8', '#F11D8C', '#FFB3B3'],
   showData: true,
   labelPosition: 'edge',
+  rotateTickLabels: true,
 }, dims);
 ```
 
