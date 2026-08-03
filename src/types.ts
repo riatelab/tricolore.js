@@ -71,6 +71,9 @@ export interface VisualizationOptions extends TricoloreOptions {
 
   /** The position of the axis labels: 'corner' | 'edge' (default: 'corner') */
   labelPosition?: 'corner' | 'edge';
+
+  /** Whether to rotate tick labels (this helps to understand how to read the ternary plot) */
+  rotateTickLabels?: boolean;
 }
 
 /**

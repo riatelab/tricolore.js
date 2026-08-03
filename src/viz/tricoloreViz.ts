@@ -193,7 +193,8 @@ function drawTriangleFrame(
   center: TernaryPoint,
   showCenter: boolean,
   showLines: boolean,
-  labelPosition: 'corner' | 'edge' = 'corner'
+  labelPosition: 'corner' | 'edge' = 'corner',
+  rotateTickLabels: boolean = false
 ): void {
   // Define triangle corners in ternary coordinates
   // and convert to SVG coordinates
@@ -371,6 +372,7 @@ function drawTriangleFrame(
 
   // Add labels along the grid lines (whether lines are shown or not)
   gridValues.forEach((val) => {
+    // Grid values for component 1
     const line = [
       ternaryToSvgCoords([val, 1 - val, 0], width, height),
       ternaryToSvgCoords([val, 0, 1 - val], width, height),
@@ -381,10 +383,15 @@ function drawTriangleFrame(
       'text-anchor': 'end',
       'font-size': '10px',
     });
+    if (rotateTickLabels) {
+      text.setAttribute('transform', `rotate(60, ${line[0][0] - 5}, ${line[0][1]})`);
+    }
     text.textContent = `${val * 100}%`;
     layers.legend.appendChild(text);
   });
+
   gridValues.forEach((val) => {
+    // Grid values for component 2
     const line = [
       ternaryToSvgCoords([0, val, 1 - val], width, height),
       ternaryToSvgCoords([1 - val, val, 0], width, height),
@@ -395,10 +402,13 @@ function drawTriangleFrame(
       'text-anchor': 'start',
       'font-size': '10px',
     });
+    // There is no rotation needed for ticks of 2nd component
     text.textContent = `${val * 100}%`;
     layers.legend.appendChild(text);
   });
+
   gridValues.forEach((val) => {
+    // Grid values for component 3
     const line = [
       ternaryToSvgCoords([1 - val, 0, val], width, height),
       ternaryToSvgCoords([0, 1 - val, val], width, height),
@@ -409,6 +419,9 @@ function drawTriangleFrame(
       'text-anchor': 'middle',
       'font-size': '10px',
     });
+    if (rotateTickLabels) {
+      text.setAttribute('transform', `rotate(-60, ${line[0][0]}, ${line[0][1] + 12.5})`);
+    }
     text.textContent = `${val * 100}%`;
     layers.legend.appendChild(text);
   });
@@ -489,6 +502,7 @@ export class Viz {
       showLines = true,
       labels = ['p₁', 'p₂', 'p₃'],
       labelPosition = 'edge',
+      rotateTickLabels = false,
     } = options;
 
     const {
@@ -544,7 +558,8 @@ export class Viz {
       center,
       showCenter,
       showLines,
-      labelPosition
+      labelPosition,
+      rotateTickLabels
     );
 
     // Add data points if requested
@@ -582,6 +597,7 @@ export class Viz {
       showLines = true,
       labels = ['p₁', 'p₂', 'p₃'],
       labelPosition = 'edge',
+      rotateTickLabels = false,
     } = options;
 
     const {
@@ -643,7 +659,8 @@ export class Viz {
       center,
       showCenter,
       showLines,
-      labelPosition
+      labelPosition,
+      rotateTickLabels
     );
 
     // Add data points if requested
@@ -676,6 +693,7 @@ export class Viz {
       showLines = true,
       labels = ['p₁', 'p₂', 'p₃'],
       labelPosition = 'edge',
+      rotateTickLabels = false,
     } = options;
 
     if (values.length !== 6) {
@@ -731,7 +749,8 @@ export class Viz {
       center,
       showCenter,
       showLines,
-      labelPosition
+      labelPosition,
+      rotateTickLabels
     );
 
     // Add data points if requested
