@@ -36,22 +36,15 @@ export default [
         file: pkg.browser,
         format: 'umd',
         name: 'tricolore',
-        sourcemap: true,
-        globals: {
-          'd3': 'd3'
-        }
+        sourcemap: true
       },
       {
         file: pkg.browser.replace('.js', '.min.js'),
         format: 'umd',
         name: 'tricolore',
-        sourcemap: true,
-        globals: {
-          'd3': 'd3'
-        }
+        sourcemap: true
       }
     ],
-    external: ['d3'],  // We handle d3 as an external / as a peer dependency
     plugins: [
       commonjs(),
       nodeResolve({
